@@ -34,5 +34,5 @@ It provides instant answers to user queries related to MinuteHire such as:
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/<your-username>/minutehire-chatbot.git
+git clone https://github.com/PandeyShalini/minutehire-chatbot.git
 cd minutehire-chatbot
