@@ -1,0 +1,42 @@
+[
+  {"question": "What is MinuteHire?", "answer": "MinuteHire is an online platform that connects businesses and individuals with skilled freelancers for short-term and project-based work."},
+  {"question": "How does MinuteHire work?", "answer": "Employers can post jobs, freelancers apply, and both parties connect through the platform to complete projects efficiently."},
+  {"question": "Is MinuteHire free to use?", "answer": "Posting jobs is free. Employers pay freelancers for completed work, and MinuteHire charges a small service fee."},
+  {"question": "Who can use MinuteHire employers or freelancers?", "answer": "Both! Employers use MinuteHire to find talent, and freelancers use it to get projects and earn income."},
+  {"question": "How is MinuteHire different from other freelance platforms?", "answer": "MinuteHire focuses on fast, short-term hiring, making it easy for businesses to get work done quickly."},
+
+  {"question": "How do I post a job on MinuteHire?", "answer": "Simply sign up, go to the 'Post a Job' section, fill in your project details, and publish your job listing."},
+  {"question": "Is there a fee to post jobs?", "answer": "No, posting jobs on MinuteHire is free."},
+  {"question": "How do I find freelancers for my project?", "answer": "You can browse freelancer profiles, filter by skills, and invite candidates to apply for your job."},
+  {"question": "How can I manage applications I receive?", "answer": "Applications appear in your employer dashboard, where you can review profiles, chat, and shortlist candidates."},
+  {"question": "Can I hire multiple freelancers for one job?", "answer": "Yes, you can hire more than one freelancer if your project requires it."},
+  {"question": "How long does it take to get a freelancer?", "answer": "Many employers get applications within minutes to hours after posting a job."},
+  {"question": "Do I need to sign a contract with freelancers?", "answer": "All agreements are handled directly on the platform through job postings and project terms."},
+
+  {"question": "How do I create a freelancer profile?", "answer": "Sign up as a freelancer, add your skills, portfolio, and experience to build a strong profile."},
+  {"question": "Do freelancers need to pay to join?", "answer": "No, signing up as a freelancer is free."},
+  {"question": "How can I apply for jobs on MinuteHire?", "answer": "Browse the job board, find projects that match your skills, and submit your application with a proposal."},
+  {"question": "How do I get paid after completing a project?", "answer": "Payments are made through the MinuteHire platform once the employer approves your work."},
+  {"question": "Can I work on multiple projects at the same time?", "answer": "Yes, freelancers can apply to and work on multiple projects simultaneously."},
+  {"question": "What skills are most in demand on MinuteHire?", "answer": "Popular categories include web development, graphic design, writing, marketing, and data entry."},
+  {"question": "Is MinuteHire only for short-term jobs?", "answer": "While the focus is on short-term hiring, long-term opportunities are also available."},
+
+  {"question": "How much does MinuteHire cost?", "answer": "Employers only pay freelancers for completed work. Freelancers receive payments minus a small platform fee."},
+  {"question": "Do you charge commission on freelancer payments?", "answer": "Yes, MinuteHire charges a service fee on each completed transaction."},
+  {"question": "How do employers pay freelancers?", "answer": "Employers can pay freelancers through secure payment methods on the platform."},
+  {"question": "Which payment methods are supported?", "answer": "Major payment methods such as credit/debit cards, UPI, and online banking are supported."},
+  {"question": "Are there any hidden fees?", "answer": "No, all fees are clearly displayed before you confirm a payment."},
+  {"question": "How do refunds work if a project is not completed?", "answer": "Refunds are handled based on the dispute resolution policy if work is not delivered as agreed."},
+
+  {"question": "Is it safe to hire freelancers on MinuteHire?", "answer": "Yes, we verify freelancer accounts and ensure payments are held securely until work is approved."},
+  {"question": "How do you verify freelancers?", "answer": "Freelancers must provide valid details, portfolio, and skill verification to build trust."},
+  {"question": "What happens if the freelancer doesn’t deliver?", "answer": "Employers can raise a dispute, and MinuteHire will review the case to ensure a fair outcome."},
+  {"question": "Does MinuteHire provide dispute resolution?", "answer": "Yes, our dispute resolution team helps resolve issues between employers and freelancers."},
+  {"question": "Can I leave reviews for freelancers or employers?", "answer": "Yes, both employers and freelancers can leave reviews after completing a project."},
+
+  {"question": "How do I sign up on MinuteHire?", "answer": "Go to minutehire.com, click 'Sign Up,' and choose either Employer or Freelancer to create your account."},
+  {"question": "I forgot my password, how do I reset it?", "answer": "Click on 'Forgot Password' on the login page and follow the reset instructions."},
+  {"question": "How do I contact customer support?", "answer": "You can contact support through the 'Help' or 'Contact Us' section on the website."},
+  {"question": "Can I use MinuteHire on mobile?", "answer": "Yes, the platform works on mobile browsers, and an app is coming soon."},
+  {"question": "How do I update my profile details?", "answer": "Log in, go to your account settings, and update your profile information."}
+]
