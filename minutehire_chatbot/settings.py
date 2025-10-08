@@ -78,13 +78,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'minutehire_chatbot.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'mongodb',  # MongoDB database ka naam (tum kuch bhi rakh sakti ho)
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017/minutehire_db'
+        }  
     }
 }
 
