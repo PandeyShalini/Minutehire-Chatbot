@@ -143,6 +143,24 @@
   .msg.bot strong {
     font-weight: bold;
   }
+  #sendBtn, #micBtn {
+  background: #3b82f6;
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+}
+
+#micBtn {
+  background: #10b981;
+}
+
 </style>
 </head>
 <body>
@@ -158,95 +176,174 @@
     </div>
   </div>
 
-  <div id="inputArea">
-    <div id="suggestions"></div>
-    <input type="text" id="userInput" placeholder="Type your question..." autocomplete="off">
-    <button id="sendBtn">Send</button>
+ <div id="inputArea">
+  <div id="suggestions"></div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <input type="text" id="userInput" placeholder="Type or speak your question..." autocomplete="off" style="flex: 1;">
+    <button id="sendBtn" title="Send">📨</button>
+    <button id="micBtn" title="Speak" style="background: none; border: none; font-size: 22px; cursor: pointer;">🎤</button>
   </div>
+</div>
 </div>
 
 <script>
-const chatbox = document.getElementById('chatbox');
-const icon = document.getElementById('chatbotIcon');
-const input = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-const messages = document.getElementById('messages');
-const suggestionsDiv = document.getElementById('suggestions');
+document.addEventListener("DOMContentLoaded", () => {
+  const chatbox = document.getElementById('chatbox');
+  const icon = document.getElementById('chatbotIcon');
+  const input = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
+  const messages = document.getElementById('messages');
+  const suggestionsDiv = document.getElementById('suggestions');
 
-// Toggle chatbox when icon clicked
-icon.addEventListener('click', () => {
-  chatbox.style.display = chatbox.style.display === 'flex' ? 'none' : 'flex';
-  if(chatbox.style.display === 'flex') input.focus();
+  let recognition;
+  let isListening = false;
+  let isFetching = false; // 🔹 Prevent multiple overlapping fetch
+
+  // --- Toggle chatbox ---
+  icon.addEventListener('click', () => {
+    chatbox.style.display = chatbox.style.display === 'flex' ? 'none' : 'flex';
+    if(chatbox.style.display === 'flex') input.focus();
+  });
+
+  // --- Append messages ---
+  function appendMessage(content, sender){
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.innerHTML = sender==='bot'? marked.parse(content):content;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  // --- Send question ---
+  function sendQuestion(isVoice=false){
+    if(isFetching) return; // 🔹 lock if previous fetch is running
+    const query = input.value.trim();
+    if(!query) return;
+
+    isFetching = true; // 🔹 lock fetch
+
+    appendMessage(query,'user');
+    input.value='';
+    suggestionsDiv.innerHTML='';
+
+    const typingDiv = document.createElement('div');
+    typingDiv.className='msg bot';
+    typingDiv.textContent='🤖 typing...';
+    messages.appendChild(typingDiv);
+    messages.scrollTop = messages.scrollHeight;
+
+    fetch(`/chatbot/reply/?query=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        typingDiv.innerHTML = marked.parse(data.reply || "⚠️ No response");
+        messages.scrollTop = messages.scrollHeight;
+
+        // 🔹 Only speak if user used voice
+        if(isVoice && 'speechSynthesis' in window){
+          const utter = new SpeechSynthesisUtterance(data.reply || "I couldn't understand");
+          utter.lang = "en-IN";
+          speechSynthesis.speak(utter);
+        }
+      })
+      .catch(err => {
+        typingDiv.textContent='⚠️ Error fetching response';
+        console.error(err);
+      })
+      .finally(() => {
+        isFetching = false; // 🔹 unlock
+      });
+  }
+
+  // --- Send on button / Enter ---
+  sendBtn.addEventListener('click', ()=>sendQuestion(false));
+  input.addEventListener('keypress', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); sendQuestion(false); }
+  });
+
+  // --- Suggestions ---
+  let typingTimer;
+  input.addEventListener('input', ()=>{
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(()=>{
+      const query = input.value.trim();
+      if(!query){ suggestionsDiv.innerHTML=''; return; }
+      fetch(`/chatbot/reply/?query=${encodeURIComponent(query)}&suggest=true`)
+        .then(res=>res.json())
+        .then(data=>{
+          suggestionsDiv.innerHTML='';
+          if(data.suggestions?.length){
+            data.suggestions.forEach(s=>{
+              const div = document.createElement('div');
+              div.className='suggestion';
+              div.textContent=s;
+              div.onclick = ()=>{ input.value=s; sendQuestion(false); };
+              suggestionsDiv.appendChild(div);
+            });
+          }
+        })
+        .catch(err=>console.error(err));
+    },400);
+  });
+
+   // --- Voice Recognition ---
+if("webkitSpeechRecognition" in window){
+  recognition = new webkitSpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.continuous = false; // 🔹 Only one question per click
+  recognition.interimResults = false;
+
+  recognition.onstart = ()=>{
+    isListening = true;
+    micBtn.innerText="🎧 Listening...";
+    micBtn.style.color="red";
+    console.log("Mic started");
+  };
+
+  recognition.onend = ()=>{
+    isListening = false;
+    micBtn.innerText="🎤";
+    micBtn.style.color="";
+    console.log("Mic stopped");
+  };
+
+  recognition.onerror = (event)=>{
+    console.log("Recognition error:", event.error);
+    micBtn.innerText="🎤";
+    micBtn.style.color="";
+    if(event.error==="network") alert("Voice recognition unavailable. You can still type your question.");
+  };
+
+  recognition.onresult = (event)=>{
+    const transcript = event.results[0][0].transcript.trim();
+    console.log("You said:", transcript);
+    input.value = transcript;
+
+    // 🔹 Send question with voice flag
+    sendQuestion(true);
+
+    // 🔹 Stop mic automatically after one question
+    recognition.stop();
+  };
+
+  micBtn.addEventListener('click', ()=>{
+    try{
+      if(isListening) recognition.stop();
+      else recognition.start();
+    } catch(e){
+      console.error("Mic start/stop error:", e);
+    }
+  });
+
+} else {
+  console.warn("Speech recognition not supported");
+  micBtn.disabled = true;
+}
 });
-
-function appendMessage(content, sender) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + sender;
-  div.innerHTML = sender === 'bot' ? marked.parse(content) : content;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-// Typing indicator & sending question
-function sendQuestion() {
-  const query = input.value.trim();
-  if (!query) return;
-
-  appendMessage(query, 'user');
-  input.value = '';
-  suggestionsDiv.innerHTML = '';
-
-  // Typing indicator
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'msg bot';
-  typingDiv.textContent = '🤖  typing...';
-  messages.appendChild(typingDiv);
-  messages.scrollTop = messages.scrollHeight;
-
-  fetch(`/chatbot/reply/?query=${encodeURIComponent(query)}`)
-    .then(res => res.json())
-    .then(data => {
-      typingDiv.innerHTML = marked.parse(data.reply);
-      messages.scrollTop = messages.scrollHeight;
-    })
-    .catch(err => {
-      typingDiv.textContent = '⚠️ Sorry, there was an error fetching response.';
-      console.error(err);
-    });
-}
-
-// Suggestions while typing
-let typingTimer;
-input.addEventListener('input', () => {
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(fetchSuggestions, 400);
-});
-
-function fetchSuggestions() {
-  const query = input.value.trim();
-  if (!query) return suggestionsDiv.innerHTML = '';
-
-  fetch(`/chatbot/reply/?query=${encodeURIComponent(query)}&suggest=true`)
-    .then(res => res.json())
-    .then(data => {
-      suggestionsDiv.innerHTML = '';
-      if(data.suggestions?.length){
-        data.suggestions.forEach(s => {
-          const div = document.createElement('div');
-          div.className = 'suggestion';
-          div.textContent = s;
-          div.onclick = () => { input.value = s; sendQuestion(); };
-          suggestionsDiv.appendChild(div);
-        });
-      }
-    })
-    .catch(err => console.error(err));
-}
-
-// Send question on Enter or button click
-sendBtn.addEventListener('click', sendQuestion);
-input.addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); sendQuestion(); } });
 </script>
+
+
+
 
 </body>
 </html>
